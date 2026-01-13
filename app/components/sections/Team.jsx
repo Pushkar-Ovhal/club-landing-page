@@ -3,16 +3,62 @@
 import { useEffect, useRef, useState } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import Shuffle from "../reusables/Shuffle";
 
 gsap.registerPlugin(ScrollTrigger);
 
 const teams = [
-  { id: "technical", title: "Technical Team", lead: "Aarav Mehta" },
-  { id: "design", title: "Design Team", lead: "Riya Shah" },
-  { id: "marketing", title: "Marketing Team", lead: "Kunal Verma" },
-  { id: "content", title: "Content Team", lead: "Sneha Patil" },
-  { id: "operations", title: "Operations Team", lead: "Rahul Nair" },
-  { id: "finance", title: "Finance Team", lead: "Neha Joshi" },
+  {
+    id: "President",
+    title: "President",
+    image: "/null",
+  },
+  {
+    id: "Vice President",
+    title: "Vice President",
+    image: "/null",
+  },
+  {
+    id: "technical",
+    title: "Technical Team",
+    lead: "l3",
+    image: "/null",
+    members: [
+      { name: "Tech Member 1", role: "role 1" },
+      { name: "Tech Member 2", role: "role 2" },
+      { name: "Tech Member 3", role: "role 3" },
+    ],
+  },
+  {
+    id: "content",
+    title: "Design & Marketing Team",
+    lead: "l4",
+    image: "/null",
+    members: [
+      { name: " Member 1", role: "role 1" },
+      { name: "Member 2", role: "role 2" },
+    ],
+  },
+  {
+    id: "operations",
+    title: "Event & Management Team",
+    lead: "l5",
+    image: "/null",
+    members: [
+      { name: "Member 1", role: "role 1" },
+      { name: "Member 1", role: "role 2" },
+    ],
+  },
+  {
+    id: "pr",
+    title: "Public Relations Team",
+    lead: "l6",
+    image: "/null",
+    members: [
+      { name: "PR Member 1", role: "PR Specialist" },
+      { name: "PR Member 2", role: "Communications Officer" },
+    ],
+  },
 ];
 
 export default function TeamsSection() {
@@ -67,6 +113,7 @@ export default function TeamsSection() {
             isActive={activeTeam === team.id}
             onOpen={() => setActiveTeam(team.id)}
             onClose={() => setActiveTeam(null)}
+            isExecutive={team.title === "President" || team.title === "Vice President"}
           />
         ))}
       </div>
@@ -74,7 +121,7 @@ export default function TeamsSection() {
   );
 }
 
-function TeamCard({ team, isActive, onOpen, onClose }) {
+function TeamCard({ team, isActive, onOpen, onClose , isExecutive }) {
   const cardRef = useRef(null);
   const leadRef = useRef(null);
   const membersRef = useRef(null);
@@ -87,7 +134,6 @@ function TeamCard({ team, isActive, onOpen, onClose }) {
     );
   }, []);
 
-  // ✅ FIXED: no opacity dimming anymore
   useEffect(() => {
     gsap.to(cardRef.current, {
       scale: isActive ? 1 : 0.9,
@@ -139,10 +185,15 @@ function TeamCard({ team, isActive, onOpen, onClose }) {
   return (
     <div
       ref={cardRef}
-      className="relative w-[1000px] h-[500px] rounded-3xl p-10 overflow-hidden flex-shrink-0 bg-black border border-white/10"
+      className="relative w-[1000px] h-[500px] rounded-3xl p-10 overflow-hidden flex-shrink-0 bg-purple-500 border border-2"
     >
       <div ref={leadRef} className="absolute inset-0">
-        <LeadView team={team} onOpen={onOpen} onClose={onClose} />
+        <LeadView 
+        team={team} 
+        onOpen={onOpen} 
+        onClose={onClose} 
+        disableHover={isExecutive}
+        />
       </div>
       <div
         ref={membersRef}
@@ -154,29 +205,72 @@ function TeamCard({ team, isActive, onOpen, onClose }) {
   );
 }
 
-function LeadView({ team, onOpen, onClose }) {
+function LeadView({ team, onOpen, onClose , disableHover }) {
+  const openTimer = useRef(null);
+  const closeTimer = useRef(null);
+
+  const handleMouseEnter = () => {
+    if (disableHover) return;
+    clearTimeout(closeTimer.current);
+    openTimer.current = setTimeout(() => {
+      onOpen();
+    }, 100); // 100ms delay
+  };
+
+  const handleMouseLeave = () => {
+    if (disableHover) return;
+    clearTimeout(openTimer.current);
+    closeTimer.current = setTimeout(() => {
+      onClose();
+    }, 80); // 80ms delay
+  };
+
   return (
-    <div className="flex h-full w-full items-center justify-between gap-12">
-      <div className="flex flex-col gap-4 w-[280px] shrink-0">
-        <div className="w-52 h-52 rounded-2xl bg-gradient-to-br from-gray-300 to-gray-500" />
-        <div className="grid grid-cols-3 gap-3">
-          <div className="w-14 h-14 rounded-xl bg-white/20" />
-          <div className="w-14 h-14 rounded-xl bg-white/20" />
-          <div className="w-14 h-14 rounded-xl bg-white/20" />
+    <div className="flex h-full w-full items-center justify-center">
+      <div className="flex items-center gap-16 max-w-[800px] w-full">
+        <div className="flex flex-col gap-4 w-[280px] shrink-0">
+          <div className="w-63 h-72 rounded-2xl bg-gradient-to-br border-3">
+            <img
+              src={team.image}
+              alt={team.title}
+              className="w-full h-full object-cover rounded-2xl"
+              draggable={false}
+            />
+          </div>
+          <div className="grid grid-cols-3 gap-3">
+            <div className="w-14 h-14 rounded-xl bg-white/20" />
+            <div className="w-14 h-14 rounded-xl bg-white/20" />
+            <div className="w-14 h-14 rounded-xl bg-white/20" />
+          </div>
         </div>
-      </div>
-      <div className="flex flex-col justify-center flex-1 pr-12">
-        <h2
-          onMouseEnter={onOpen}
-          onMouseLeave={onClose}
-          className="text-4xl font-bold cursor-pointer hover:underline w-fit"
-        >
-          {team.title}
-        </h2>
-        <p className="text-xl opacity-80 mt-3">Lead: {team.lead}</p>
-        <p className="text-sm opacity-60 mt-5 max-w-xl">
-          Hover to explore all members of the {team.title.toLowerCase()}
-        </p>
+        <div className="flex flex-col justify-center flex-1 pr-12">
+          <h2
+            onMouseEnter={handleMouseEnter}
+            onMouseLeave={handleMouseLeave}
+            className="text-4xl font-bold cursor-pointer hover:underline w-fit"
+          >
+            <Shuffle
+              text={`${team.title}`}
+              shuffleDirection="right"
+              duration={0.35}
+              animationMode="evenodd"
+              shuffleTimes={1}
+              ease="power3.out"
+              stagger={0.03}
+              threshold={0.1}
+              triggerOnce={true}
+              triggerOnHover={true}
+              respectReducedMotion={true}
+            />
+          </h2>
+          {!disableHover && (<p className="text-2xl font-bold opacity-80 mt-10">Lead: {team.lead}</p>)}
+          <p className="text-xl opacity-60 mt-2 max-w-xl">
+            Lorem, ipsum dolor sit amet consectetur adipisicing elit. Sed,
+            facere corporis? Voluptatem optio suscipit accusamus magni aliquid
+            debitis natus vel odit quis at laudantium, praesentium eveniet,
+            itaque iusto ducimus veniam!
+          </p>
+        </div>
       </div>
     </div>
   );
@@ -184,24 +278,41 @@ function LeadView({ team, onOpen, onClose }) {
 
 function MembersView({ team }) {
   return (
-    <div className="h-full flex flex-col">
-      <div className="flex items-center justify-between mb-6">
-        <h2 className="text-3xl font-bold">{team.title} Members</h2>
-      </div>
-      <div className="grid grid-cols-3 gap-6 flex-1">
-        {[1, 2, 3, 4, 5, 6].map((i) => (
-          <div
-            key={i}
-            className="bg-white/10 rounded-2xl p-4 flex items-center gap-4"
-          >
-            <div className="w-16 h-16 rounded-full bg-gradient-to-br from-gray-300 to-gray-500" />
-            <div>
-              <p className="text-lg font-medium">Member {i}</p>
-              <p className="text-sm opacity-60">Role</p>
+    <div className="flex h-full w-full items-center justify-center">
+      <div className="flex flex-col max-w-[900px] w-full px-4">
+        {/* HEADER */}
+        <div className="mb-8">
+          <h2 className="text-3xl font-bold">{team.title} Members</h2>
+          <p className="text-xl opacity-60 mt-1">
+            Meet the people behind {team.title.toLowerCase()}
+          </p>
+        </div>
+
+        {/* RESPONSIVE GRID */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          {team.members?.map((member, i) => (
+            <div
+              key={i}
+              className="bg-white/10 rounded-2xl p-4 flex items-center gap-4 border-2"
+            >
+              <div className="w-14 h-14 rounded-full overflow-hidden bg-neutral-700 shrink-0">
+                <img
+                  src={member.image}
+                  alt={member.name}
+                  className="w-full h-full object-cover"
+                  draggable={false}
+                />
+              </div>
+              <div className="">
+                <p className="text-base font-medium">{member.name}</p>
+                <p className="text-sm opacity-60">{member.role}</p>
+              </div>
             </div>
-          </div>
-        ))}
+          ))}
+        </div>
       </div>
     </div>
   );
 }
+
+
