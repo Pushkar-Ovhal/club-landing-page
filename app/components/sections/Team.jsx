@@ -21,37 +21,35 @@ export default function TeamsSection() {
   const [activeTeam, setActiveTeam] = useState(null);
 
   useEffect(() => {
-  const container = containerRef.current;
-  const section = sectionRef.current;
+    const container = containerRef.current;
+    const section = sectionRef.current;
 
-  let ctx = gsap.context(() => {
-    const getScrollDistance = () => {
-      return container.scrollWidth - window.innerWidth;
-    };
+    let ctx = gsap.context(() => {
+      const getScrollDistance = () => {
+        return container.scrollWidth - window.innerWidth;
+      };
 
-    gsap.to(container, {
-      x: () => -getScrollDistance(),
-      ease: "none",
-      scrollTrigger: {
-        trigger: section,
-        start: "top top",
-        end: () => `+=${getScrollDistance()}`,
-        scrub: 1,
-        pin: true,
-        invalidateOnRefresh: true,
-        anticipatePin: 1,
-      },
+      gsap.to(container, {
+        x: () => -getScrollDistance(),
+        ease: "none",
+        scrollTrigger: {
+          trigger: section,
+          start: "top top",
+          end: () => `+=${getScrollDistance()}`,
+          scrub: 1,
+          pin: true,
+          invalidateOnRefresh: true,
+          anticipatePin: 1,
+        },
+      });
+    }, section);
+
+    requestAnimationFrame(() => {
+      ScrollTrigger.refresh();
     });
-  }, section);
 
-  // VERY IMPORTANT – force refresh after layout is stable
-  requestAnimationFrame(() => {
-    ScrollTrigger.refresh();
-  });
-
-  return () => ctx.revert();
-}, []);
-
+    return () => ctx.revert();
+  }, []);
 
   return (
     <section
@@ -81,7 +79,6 @@ function TeamCard({ team, isActive, onOpen, onClose }) {
   const leadRef = useRef(null);
   const membersRef = useRef(null);
 
-  // Initial card appearance animation
   useEffect(() => {
     gsap.fromTo(
       cardRef.current,
@@ -90,17 +87,15 @@ function TeamCard({ team, isActive, onOpen, onClose }) {
     );
   }, []);
 
-  // Active state scaling
+  // ✅ FIXED: no opacity dimming anymore
   useEffect(() => {
     gsap.to(cardRef.current, {
       scale: isActive ? 1 : 0.9,
-      opacity: isActive ? 1 : 0.5,
       duration: 0.6,
       ease: "power3.out",
     });
   }, [isActive]);
 
-  // View transition logic
   useEffect(() => {
     const leadEl = leadRef.current;
     const membersEl = membersRef.current;
@@ -108,13 +103,7 @@ function TeamCard({ team, isActive, onOpen, onClose }) {
     gsap.killTweensOf([leadEl, membersEl]);
 
     if (isActive) {
-      gsap.set(membersEl, { pointerEvents: "auto" });
-      
-      const tl = gsap.timeline({
-        onComplete: () => {
-          gsap.set(leadEl, { pointerEvents: "none" });
-        }
-      });
+      const tl = gsap.timeline();
 
       tl.to(leadEl, {
         opacity: 0,
@@ -128,19 +117,16 @@ function TeamCard({ team, isActive, onOpen, onClose }) {
         "<"
       );
     } else {
-      gsap.set(leadEl, { pointerEvents: "auto" });
-      
-      const tl = gsap.timeline({
-        onComplete: () => {
-          gsap.set(membersEl, { pointerEvents: "none", opacity: 0 });
-        }
-      });
+      const tl = gsap.timeline();
 
       tl.to(membersEl, {
         opacity: 0,
         y: 30,
         duration: 0.25,
         ease: "power2.inOut",
+        onComplete: () => {
+          gsap.set(membersEl, { opacity: 0 });
+        },
       }).fromTo(
         leadEl,
         { opacity: 0, y: -30 },
@@ -153,15 +139,13 @@ function TeamCard({ team, isActive, onOpen, onClose }) {
   return (
     <div
       ref={cardRef}
-      onMouseEnter={onOpen}
-      onMouseLeave={onClose}
       className="relative w-[1000px] h-[500px] rounded-3xl p-10 overflow-hidden flex-shrink-0 bg-black border border-white/10"
     >
       <div ref={leadRef} className="absolute inset-0">
-        <LeadView team={team} />
+        <LeadView team={team} onOpen={onOpen} onClose={onClose} />
       </div>
-      <div 
-        ref={membersRef} 
+      <div
+        ref={membersRef}
         className="absolute inset-0 opacity-0 pointer-events-none"
       >
         <MembersView team={team} />
@@ -170,7 +154,7 @@ function TeamCard({ team, isActive, onOpen, onClose }) {
   );
 }
 
-function LeadView({ team }) {
+function LeadView({ team, onOpen, onClose }) {
   return (
     <div className="flex h-full w-full items-center justify-between gap-12">
       <div className="flex flex-col gap-4 w-[280px] shrink-0">
@@ -182,7 +166,13 @@ function LeadView({ team }) {
         </div>
       </div>
       <div className="flex flex-col justify-center flex-1 pr-12">
-        <h2 className="text-4xl font-bold">{team.title}</h2>
+        <h2
+          onMouseEnter={onOpen}
+          onMouseLeave={onClose}
+          className="text-4xl font-bold cursor-pointer hover:underline w-fit"
+        >
+          {team.title}
+        </h2>
         <p className="text-xl opacity-80 mt-3">Lead: {team.lead}</p>
         <p className="text-sm opacity-60 mt-5 max-w-xl">
           Hover to explore all members of the {team.title.toLowerCase()}
@@ -197,15 +187,6 @@ function MembersView({ team }) {
     <div className="h-full flex flex-col">
       <div className="flex items-center justify-between mb-6">
         <h2 className="text-3xl font-bold">{team.title} Members</h2>
-        <button
-          onClick={(e) => {
-            e.stopPropagation();
-            // Close handled by parent onMouseLeave
-          }}
-          className="text-sm opacity-70 hover:opacity-100 transition"
-        >
-          Close
-        </button>
       </div>
       <div className="grid grid-cols-3 gap-6 flex-1">
         {[1, 2, 3, 4, 5, 6].map((i) => (
