@@ -21,7 +21,7 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body
-        className={`${inter.className} ${merriweather.variable} antialiased w-full p-5 container mx-auto max-w-7xl`}
+        className={`${inter.className} ${merriweather.variable} antialiased w-full px-5 container mx-auto max-w-7xl`}
       >
         {children}
       </body>
