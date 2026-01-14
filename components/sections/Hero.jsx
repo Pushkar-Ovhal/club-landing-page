@@ -45,7 +45,6 @@ export default function HeroSection() {
           px-3 md:px-16
         "
       >
-        {/* Background image */}
         <div
           className="absolute inset-0 transition-all duration-500 pointer-events-none"
           style={{
@@ -55,11 +54,9 @@ export default function HeroSection() {
           }}
         />
 
-        {/* Dark overlay */}
         <div className="absolute inset-0 bg-black/40 pointer-events-none" />
 
-        {/* LEFT CONTENT */}
-        <div className="relative z-10 flex flex-col justify-center gap-y-6 py-10">
+        <div className="relative z-10 md:order-1 order-2 flex flex-col justify-center gap-y-6 py-10">
           <h1 className="text-4xl md:text-5xl font-extrabold font-merriweather leading-tight">
             Ignite. Execute. Dominate.
           </h1>
@@ -97,9 +94,7 @@ export default function HeroSection() {
           </Link>
         </div>
 
-        {/* RIGHT SIDE (LOGO + THUMBNAILS) */}
-        <div className="relative z-10 hidden md:grid grid-cols-[2fr_1.5fr] gap-x-6 items-stretch py-12">
-          {/* LOGO */}
+        <div className="relative z-10 md:grid order-1 md:order-2 grid-cols-[2fr_1.5fr] gap-x-6 items-stretch py-12">
           <div className="flex items-center justify-center h-full">
             <Image
               width={1000}
@@ -111,8 +106,7 @@ export default function HeroSection() {
             />
           </div>
 
-          {/* THUMBNAILS */}
-          <div className="flex flex-col gap-y-6 justify-center">
+          <div className="md:flex flex-col gap-y-6 hidden justify-center">
             {thumbnails.map((img) => (
               <button
                 key={img}
