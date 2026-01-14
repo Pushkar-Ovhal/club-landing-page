@@ -45,13 +45,11 @@ export default function HeroSection() {
           px-3 md:px-16
         "
       >
-        <div
-          className="absolute inset-0 transition-all duration-500 pointer-events-none"
-          style={{
-            backgroundImage: `url(${background})`,
-            backgroundSize: "cover",
-            backgroundPosition: "center",
-          }}
+        <Image
+          src={background}
+          alt=""
+          fill
+          className="pointer-events-none transition-all duration-500 object-cover object-center"
         />
 
         <div className="absolute inset-0 bg-black/40 pointer-events-none" />
