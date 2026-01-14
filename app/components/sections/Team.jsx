@@ -1,5 +1,6 @@
 "use client";
 
+import { FaInstagram, FaLinkedin, FaGithub } from "react-icons/fa";
 import { useEffect, useRef, useState } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -287,7 +288,7 @@ function LeadView({ team, onOpen, onClose, disableHover }) {
       {/* DESKTOP */}
       <div className="hidden md:flex flex-col md:flex-row items-center gap-6 md:gap-16 w-full max-w-full px-2">
         <div className="flex flex-col gap-4 px-8 w-full md:w-[280px] shrink-0 items-center md:items-start">
-          <div className="w-52 h-72 rounded-2xl border-4 border-yellow-500 overflow-hidden">
+          <div className="w-52 h-72 rounded-2xl border-4 border-yellow-500 bg-black/60 overflow-hidden">
             <img
               src={team.image}
               alt={team.title}
@@ -296,10 +297,36 @@ function LeadView({ team, onOpen, onClose, disableHover }) {
             />
           </div>
 
-          <div className="grid grid-cols-3 gap-8 mt-4">
-            <div className="w-12 h-12 rounded-xl bg-white/20" />
-            <div className="w-12 h-12 rounded-xl bg-white/20" />
-            <div className="w-12 h-12 rounded-xl bg-white/20" />
+          <div className="flex gap-10 mt-4 relative z-20">
+            <a
+              href={team.instagram || "#"}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="w-10 h-10 rounded-xl bg-purple-800/50 flex items-center justify-center 
+               hover:bg-yellow-400/30 hover:scale-110 transition-all duration-200 border-2 border-yellow-500"
+            >
+              <FaInstagram size={22} className="text-yellow-300" />
+            </a>
+
+            <a
+              href={team.linkedin || "#"}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="w-10 h-10 rounded-xl bg-purple-800/50 flex items-center justify-center 
+               hover:bg-yellow-400/30 hover:scale-110 transition-all duration-200 border-2 border-yellow-500"
+            >
+              <FaLinkedin size={22} className="text-yellow-300" />
+            </a>
+
+            <a
+              href={team.github || "#"}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="w-10 h-10 rounded-xl bg-purple-800/50 flex items-center justify-center 
+               hover:bg-yellow-400/30 hover:scale-110 transition-all duration-200 border-2 border-yellow-500"
+            >
+              <FaGithub size={22} className="text-yellow-300" />
+            </a>
           </div>
         </div>
 
@@ -361,10 +388,36 @@ function LeadView({ team, onOpen, onClose, disableHover }) {
           corporis?
         </p>
 
-        <div className="flex gap-4 mt-4">
-          <div className="w-10 h-10 rounded-xl bg-white/20" />
-          <div className="w-10 h-10 rounded-xl bg-white/20" />
-          <div className="w-10 h-10 rounded-xl bg-white/20" />
+        <div className="flex gap-4 mt-4 relative z-20">
+          <a
+            href={team.instagram || "#"}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center 
+               hover:bg-yellow-400/30 hover:scale-110 transition-all duration-200"
+          >
+            <FaInstagram size={22} className="text-yellow-300" />
+          </a>
+
+          <a
+            href={team.linkedin || "#"}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center 
+               hover:bg-yellow-400/30 hover:scale-110 transition-all duration-200"
+          >
+            <FaLinkedin size={22} className="text-yellow-300" />
+          </a>
+
+          <a
+            href={team.github || "#"}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center 
+               hover:bg-yellow-400/30 hover:scale-110 transition-all duration-200"
+          >
+            <FaGithub size={22} className="text-yellow-300" />
+          </a>
         </div>
 
         <p className="text-xs opacity-50 mt-4">(Tap title to view members)</p>
