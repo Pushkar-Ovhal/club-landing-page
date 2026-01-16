@@ -67,28 +67,41 @@ export default function TeamsSection() {
     // ==========================
     // DESKTOP – horizontal pinned scroll
     // ==========================
-    mm.add("(min-width: 768px)", () => {
-      const getScrollDistance = () => container.scrollWidth - window.innerWidth;
+mm.add("(min-width: 768px)", () => {
+  const getScrollDistance = () => {
+    const containerWidth = container.scrollWidth;
+    const viewportWidth = section.offsetWidth;
+    const lastCard = container.lastElementChild;
 
-      const tween = gsap.to(container, {
-        x: () => -getScrollDistance(),
-        ease: "none",
-        scrollTrigger: {
-          trigger: section,
-          start: "top top",
-          end: () => `+=${getScrollDistance()}`,
-          scrub: 1,
-          pin: true,
-          invalidateOnRefresh: true,
-          anticipatePin: 1,
-        },
-      });
+    if (!lastCard) return containerWidth - viewportWidth;
 
-      return () => {
-        tween.kill();
-        ScrollTrigger.getAll().forEach((t) => t.kill());
-      };
-    });
+    const lastCardWidth = lastCard.offsetWidth;
+    const centerOffset = (viewportWidth / 2) - (lastCardWidth / 2);
+
+    return containerWidth - viewportWidth + centerOffset;
+  };
+
+  const tween = gsap.to(container, {
+    x: () => -getScrollDistance(),
+    ease: "none",
+    scrollTrigger: {
+      trigger: section,
+      start: "top top",
+      end: () => `+=${getScrollDistance()}`,
+      scrub: 1,
+      pin: true,
+      invalidateOnRefresh: true,
+      anticipatePin: 1,
+    },
+  });
+
+  ScrollTrigger.refresh();
+
+  return () => {
+    tween.scrollTrigger && tween.scrollTrigger.kill();
+    tween.kill();
+  };
+});
 
     // ==========================
     // MOBILE – auto swipe marquee
