@@ -1,164 +1,177 @@
-"use client";
+'use client'
 
-import React, { useState, useEffect } from "react";
-import Link from "next/link";
-import Image from "next/image";
-import { cn } from "@/lib/utils";
-import { buttonVariants } from "../ui/button";
-import { HERO_VARIANTS, HERO_IMAGES } from "@/lib/constants/banner";
-
-function useTypewriter(text = "", speed = 30) {
-  const [displayed, setDisplayed] = useState("");
-
-  useEffect(() => {
-    if (!text) return;
-
-    setDisplayed("");
-    let i = 0;
-
-    const interval = setInterval(() => {
-      i++;
-      setDisplayed(text.slice(0, i));
-      if (i >= text.length) clearInterval(interval);
-    }, speed);
-
-    return () => clearInterval(interval);
-  }, [text, speed]);
-
-  return displayed;
-}
+import React from 'react'
+import Link from 'next/link'
+import Image from 'next/image'
+import { cn } from '@/lib/utils'
+import { buttonVariants } from '../ui/button'
+import BlurText from '../BlurText.jsx'
+import ShinyText from '../ShinyText.jsx'
+import SplitText from '../SplitText.jsx'
 
 export default function HeroSection() {
-  const [currentBg, setCurrentBg] = useState(HERO_IMAGES[0]);
-  const [nextBg, setNextBg] = useState(null);
-  const [isTransitioning, setIsTransitioning] = useState(false);
-
-  const thumbnails = HERO_IMAGES.filter((img) => img !== currentBg);
-  const { label, href, text, heading } = HERO_VARIANTS[currentBg];
-
-  const typedText = useTypewriter(text, 13);
-  const typedHeading = useTypewriter(heading, 15);
-
-  const changeBackground = (img) => {
-    if (img === currentBg || isTransitioning) return;
-
-    setNextBg(img);
-    setIsTransitioning(true);
-
-    setTimeout(() => {
-      setCurrentBg(img);
-      setNextBg(null);
-      setIsTransitioning(false);
-    }, 300);
-  };
-
   return (
     <section className="w-full">
       <div
         className="
-          relative overflow-hidden rounded-4xl text-white
-          min-h-150
-          grid grid-cols-1 md:grid-cols-2
-          px-3 md:px-16
+          relative overflow-hidden rounded-4xl
+          min-h-152
+          grid grid-cols-1 md:grid-cols-[1.1fr_0.9fr]
+          px-4 md:px-16
         "
       >
-        <Image
-          src={currentBg}
-          alt=""
-          fill
-          priority
-          className="pointer-events-none object-cover object-center"
+        {/* Background Video */}
+        <video
+          className="pointer-events-none absolute inset-0 h-full w-full object-cover"
+          autoPlay
+          muted
+          loop
+          playsInline
+          preload="auto"
+        >
+          <source src="/hero-bg.mp4" type="video/mp4" />
+        </video>
+
+        <div
+          className="
+            absolute inset-0 pointer-events-none
+            bg-linear-to-br
+            from-black/25 via-black/15 to-black/25
+            backdrop-saturate-110
+          "
         />
 
-        {/* Incoming Background (cross-fade) */}
-        {nextBg && (
-          <Image
-            src={nextBg}
-            alt=""
-            fill
-            className={cn(
-              "pointer-events-none object-cover object-center",
-              "transition-opacity duration-300 ease-in-out",
-              isTransitioning ? "opacity-100" : "opacity-0"
-            )}
-          />
-        )}
+        {/* TEXT COLUMN */}
+        <div className="relative z-20 flex flex-col justify-center items-start py-12">
+          {/* Quiet zone behind text */}
+          <div className="relative">
+            <div
+              className="
+                absolute -inset-8
+                bg-black/35
+                blur-3xl
+                rounded-3xl
+              "
+            />
 
-        <div className="absolute inset-0 bg-black/40 pointer-events-none" />
+            {/* Glass Card */}
+            <div
+              className="
+                relative
+                bg-white/15
+                backdrop-blur-md
+                border border-white/20
+                rounded-2xl
+                shadow-[0_20px_60px_rgba(0,0,0,0.35)]
+                flex flex-col gap-y-10
+                p-6 md:p-8
+              "
+            >
+              {/* Heading */}
+              <BlurText
+                text="Ignite. Execute. Dominate."
+                delay={150}
+                animateBy="words"
+                direction="top"
+                onAnimationComplete={() => {}}
+                className="
+                  md:text-4xl text-xl font-extrabold font-merriweather
+                  text-white
+                  drop-shadow-[0_4px_20px_rgba(0,0,0,0.6)]
+                "
+              />
 
-        <div className="relative z-10 md:order-1 order-2 flex flex-col justify-center gap-y-6 py-10">
-          <h1 className="text-4xl md:text-5xl font-extrabold font-merriweather leading-tight">
-            {typedHeading}
-          </h1>
+              <SplitText
+                text="A flexible, next-gen tech community built for learning, building, and scaling. From workshops to hackathons, we help you turn skills into momentum. backed by Unstop."
+                className="
+                  md:text-2xl text-lg font-semibold
+                  font-rajdhani
+                  text-white/90
+                  leading-relaxed
+                  max-w-[60ch]
+                "
+                delay={8}
+                duration={0.6}
+                ease="power3.out"
+                splitType="chars"
+                from={{ opacity: 0, y: 40 }}
+                to={{ opacity: 1, y: 0 }}
+                threshold={0.1}
+                rootMargin="-100px"
+                textAlign="left"
+                onLetterAnimationComplete={() => {}}
+              />
 
-          <p className="max-w-lg text-slate-100 font-semibold">{typedText}</p>
-
-          <Link
-            href={href}
-            className={buttonVariants({
-              variant: "outline",
-              className: cn(
-                "group self-start border-2 border-black bg-white text-black",
-                "transition-transform duration-300 ease-out hover:scale-105",
-                "px-4 py-2"
-              ),
-            })}
-          >
-            <span className="flex items-center gap-x-3">
-              <span>{label}</span>
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                strokeWidth="1.5"
-                stroke="currentColor"
-                className="size-6 translate-x-1 transition-transform duration-300 group-hover:translate-x-2"
+              <Link
+                href="/join"
+                className={buttonVariants({
+                  variant: 'outline',
+                  className: cn(
+                    'group self-start',
+                    'border-2 border-white/80 bg-white/90 text-black',
+                    'shadow-lg shadow-black/30 backdrop-blur-sm',
+                    'transition-all duration-300 ease-out',
+                    'hover:scale-105 hover:bg-white hover:shadow-xl',
+                    'px-5 py-2.5'
+                  ),
+                })}
               >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M17.25 8.25 21 12m0 0-3.75 3.75M21 12H3"
-                />
-              </svg>
-            </span>
-          </Link>
+                <span className="flex items-center gap-x-3">
+                  <ShinyText
+                    text="Join Our Community"
+                    speed={2}
+                    delay={0}
+                    color="#000000"
+                    shineColor="#62748e"
+                    spread={120}
+                    direction="left"
+                    yoyo={false}
+                    pauseOnHover={false}
+                  />
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    strokeWidth="1.5"
+                    stroke="currentColor"
+                    className="
+                      size-6
+                      translate-x-1
+                      transition-transform duration-300
+                      group-hover:translate-x-2
+                    "
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M17.25 8.25 21 12m0 0-3.75 3.75M21 12H3"
+                    />
+                  </svg>
+                </span>
+              </Link>
+            </div>
+          </div>
         </div>
 
-        <div className="relative z-10 md:grid order-1 md:order-2 grid-cols-[2fr_1.5fr] gap-x-6 items-stretch py-12">
-          <div className="flex items-center justify-center h-full">
-            <Image
-              width={1000}
-              height={1000}
-              quality={100}
-              src="/logo/uic.webp"
-              alt="UIC Logo"
-              className="max-h-full max-w-full object-contain"
-            />
-          </div>
-
-          <div className="md:flex hidden flex-col gap-y-6 justify-center">
-            {thumbnails.map((img) => (
-              <button
-                key={img}
-                onClick={() => changeBackground(img)}
-                className="relative rounded-xl transition-transform duration-300 hover:scale-105"
-              >
-                <Image
-                  src={img}
-                  width={240}
-                  height={160}
-                  quality={50}
-                  alt={HERO_VARIANTS[img].alt}
-                  className="w-72 object-cover rounded-xl"
-                />
-                <span className="absolute bottom-3 left-3 text-sm font-semibold tracking-wide text-white">
-                  {HERO_VARIANTS[img].tag}
-                </span>
-              </button>
-            ))}
-          </div>
+        <div
+          className="
+            relative z-20
+            flex items-center justify-center
+            opacity-90
+            drop-shadow-[0_20px_40px_rgba(0,0,0,0.5)]
+            pb-5 md:pb-0
+          "
+        >
+          <Image
+            src="/logo/uic.webp"
+            alt="UIC Logo"
+            width={1000}
+            height={1000}
+            quality={100}
+            className="max-h-full max-w-full object-contain"
+          />
         </div>
       </div>
     </section>
-  );
+  )
 }

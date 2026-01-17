@@ -1,14 +1,24 @@
-@import "tailwindcss";
-@import "tw-animate-css";
+@import 'tailwindcss';
+@import 'tw-animate-css';
 
 @custom-variant dark (&:is(.dark *));
 
 @theme {
   --font-merriweather: var(--font-merriweather);
+  --font-manrope: var(--font-manrope);
+  --font-rajdhani: var(--font-rajdhani);
 }
 
 .font-merriweather {
   font-family: var(--font-merriweather);
+}
+
+.font-manrope {
+  font-family: var(--font-manrope);
+}
+
+.font-rajdhani {
+  font-family: var(--font-rajdhani);
 }
 
 @theme inline {
